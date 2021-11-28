@@ -1,12 +1,6 @@
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
-
 // defined k8x configuration
-const token = "eyJhbGciOiJSUzI1NiIsImtpZCI6Ilg1Rk0yNlJYT1FmUUEwR1F1V1p3cXB0UEgyRUZXNmJ5WllONFZSUjAyZ1kifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJjbHVzdGVyLTEtdG9rZW4tOGtnajIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiY2x1c3Rlci0xIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiZTYxZTdkOWEtNmI3MC00MTk3LTlkNjEtZDI3YTNjYTU5MDczIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmNsdXN0ZXItMSJ9.TQ-dsLcP5Q3s64s34Pc7tJS1AxWBKmY4Z2vrxTa9_qxr5plYVGVUZplZ4Ga5YbJZcymi6GKNVHR2f6XgkjiJDrVPQgbfb0Q74hxzsxtvSbUolj_n_QmvxxXtDUgvVZI_L0sK4YDzVLFrxXqa9czw9mZnGC7BpfUbYAwI0uXgjZixCKUdGIMGPHeSWgrHn-y-pNcRuHu19E0QkMBLayRoQmYO70ks3LFfDnb4PWqsC4Doe5IOvYRpzjMTOBMUH_cT_-TlwMUPXBMb_VTxwfVZJ32xfXEDuhqa7upx-c9YUhFKJUuen2EbzHo4zm46Pj-cu7ScqmwnsdZBL2J4ClgxFQ";
-const host = 'https://192.168.150.194:6443';
-const namespace = 'default';
-const pod = 'hello-world-5869894b4d-sx9kl';
-const container = 'hello-world';
-const command = 'sh';
+
 const querys = require('query-string');
 const WebSocketServer = require('websocket').server;
 const WebSocket = require('ws');
@@ -15,19 +9,16 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
-
-
 const documentRoot = 'public';
-const url = `${host}/api/v1/namespaces/${namespace}/pods/${pod}/exec?container=${container}&stdin=true&stdout=true&stderr=true&tty=true&command=${command}&pretty=true&follow=true`;
+
 var app = express();
 var server = require('http').Server(app);
 
 app.use(express.static('public'));
 
-server.listen(8080, function () {
-    console.log((new Date()) + ' Server is listening on port 8080');
+server.listen(8070, function () {
+    console.log((new Date()) + ' Server is listening on port 8070');
 });
-
 
 wsServer = new WebSocketServer({
     httpServer: server,
@@ -43,8 +34,17 @@ function originIsAllowed(origin) {
     return true;
 }
 var connection;
-wsServer.on('request', function (request) {
-
+wsServer.on('request', function (request, response) {
+    console.log(request)
+    console.log(request.resourceURL.query.network)
+    const token = "eyJhbGciOiJSUzI1NiIsImtpZCI6Ilg1Rk0yNlJYT1FmUUEwR1F1V1p3cXB0UEgyRUZXNmJ5WllONFZSUjAyZ1kifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJjbHVzdGVyLTEtdG9rZW4tOGtnajIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiY2x1c3Rlci0xIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiZTYxZTdkOWEtNmI3MC00MTk3LTlkNjEtZDI3YTNjYTU5MDczIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmNsdXN0ZXItMSJ9.TQ-dsLcP5Q3s64s34Pc7tJS1AxWBKmY4Z2vrxTa9_qxr5plYVGVUZplZ4Ga5YbJZcymi6GKNVHR2f6XgkjiJDrVPQgbfb0Q74hxzsxtvSbUolj_n_QmvxxXtDUgvVZI_L0sK4YDzVLFrxXqa9czw9mZnGC7BpfUbYAwI0uXgjZixCKUdGIMGPHeSWgrHn-y-pNcRuHu19E0QkMBLayRoQmYO70ks3LFfDnb4PWqsC4Doe5IOvYRpzjMTOBMUH_cT_-TlwMUPXBMb_VTxwfVZJ32xfXEDuhqa7upx-c9YUhFKJUuen2EbzHo4zm46Pj-cu7ScqmwnsdZBL2J4ClgxFQ";
+    const host = 'https://192.168.150.194:6443';
+    const namespace = request.resourceURL.query.network
+    const pod = request.resourceURL.query.podName
+    const container = request.resourceURL.query.containerName
+    const command = 'sh';
+    const url = `${host}/api/v1/namespaces/${namespace}/pods/${pod}/exec?container=${container}&stdin=true&stdout=true&stderr=true&tty=true&command=${command}&pretty=true&follow=true`;
+    console.log(url)
     if (!originIsAllowed(request.origin)) {
         // Make sure we only accept requests from an allowed origin
         request.reject();
@@ -58,7 +58,6 @@ wsServer.on('request', function (request) {
     connection.on('close', function (reasonCode, description) {
         console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
     });
-
     const ws = new WebSocket(url, {
         headers: {
             'Authorization': `Bearer ${token}`
